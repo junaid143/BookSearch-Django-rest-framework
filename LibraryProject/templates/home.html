@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %}
+<title>Home Page</title>
+{% endblock title %}
+
+
+{% block body %}
+
+<div class="container my-5">
+
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-6">
+
+                <label for="customRange1" class="form-label">Search By Price</label>
+
+                <div>
+                    <span id="minPrice"><b>{{minPrice.price__min}}</b></span>
+
+                    <input type="range" class="form-range w-75" id="customRange1" min="{{minPrice.price__min}}" max="{{maxPrice.price__max}}" onchange="getbooks()">
+
+                    <span id="maxPrice"><b>{{maxPrice.price__max}}</b></span>
+                </div>
+                <span id="showPrice">Price Selected {{minPrice.price__min}}</span>
+            </div>
+            <div class="col-6">
+
+                <input type="text" name="search" id="search" class="form-control">
+                <input type="submit" value="Search" class="btn btn-success" onclick="getbooks()">
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="container my-4">
+
+        <div class="row" id="all_books">
+            {% for book in all_books %}
+            <div class="col-3 mb-3">
+
+                <div class="card" style="width: 18rem;">
+                    
+                    <div class="card-body">
+                      <h5 class="card-title">{{book.name}}</h5>
+                      <p class="card-text">Author {{book.author}}</p>
+                      <p class="card-text">Price {{book.price}}</p>
+                      <a href="#" class="btn btn-primary">View Book</a>
+                    </div>
+                  </div>
+            </div>
+
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function getbooks(){
+        var rangebar = document.getElementById('customRange1');
+        var showPrice = document.getElementById('showPrice');
+        var all_books = document.getElementById('all_books');
+        var search = document.getElementById('search');
+
+        // console.log(search.value)
+
+        showPrice.innerHTML = 'Price Selected '+ rangebar.value;
+
+        var cols = '';
+
+        axios.get(`http://127.0.0.1:8000/book_api/?price=${rangebar.value}&name=${search.value}`).then(function(resp){
+
+            console.log(resp.data)
+
+            var arr = resp.data
+
+            for (var i = 0 ; i< arr.length ;i++ ){
+
+                cols += `
+                <div class="col-3 mb-3">
+
+                    <div class="card" style="width: 18rem;">
+                        
+                        <div class="card-body">
+                        <h5 class="card-title">${arr[i].name}</h5>
+                        <p class="card-text">Author ${arr[i].author}</p>
+                        <p class="card-text">Price ${arr[i].price}</p>
+                        <a href="#" class="btn btn-primary">View Book</a>
+                        </div>
+                    </div>
+                </div>
+                `
+                
+            }
+            all_books.innerHTML = cols
+            search.value = '';
+
+
+        }).catch(function(err){
+            alert(err)
+        })
+
+
+    }
+
+</script>
+
+{% endblock body %}

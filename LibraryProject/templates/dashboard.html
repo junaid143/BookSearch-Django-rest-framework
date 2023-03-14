@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %}
+<title>Dashboard Page</title>
+{% endblock title %}
+
+
+{% block body %}
+
+<div class="container my-5">
+
+    <div class="container bg-secondary text-light text-center p-2 rounded-3 shadow">
+        <h1 class="display-6">Dashbord</h1>
+
+    </div>
+
+    <div class="container my-5">
+
+        <div class="container">
+            <a href="{% url 'addbook' %}" class="btn btn-primary">Add Book</a>
+        </div>
+
+        <div class="container my-5">
+            <table class="table">
+                <thead>
+                    <th>Book Name</th>
+                    <th>Book Description </th>
+                    <th>Book Author</th>
+                    <th>Book Price</th>
+                    <th>Actions</th>
+                </thead>
+                <tbody id="tableData">
+
+
+                </tbody>
+
+
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+<script>
+
+    var tableData = document.getElementById('tableData');
+    var tdata = '';
+
+    axios.get('http://127.0.0.1:8000/book_api/').then(function (resp) {
+        // console.log(resp.data)
+
+        var arr = resp.data;
+
+        for (var i = 0; i < arr.length; i++) {
+
+            tdata += `
+        <tr>
+            <td>${arr[i].name}</td>
+            <td>${arr[i].desc}</td>
+            <td>${arr[i].author}</td>
+            <td>${arr[i].price}</td>
+            <td><a href="/updatebook/${arr[i].id}/" class="btn btn-success">Update</a>
+                <a href="" class="btn btn-danger" onclick="DeleteBtn(${arr[i].id})">Delete</a></td>
+        </tr>
+        
+        `
+        }
+
+        tableData.innerHTML = tdata;
+
+
+
+    }).catch(function (err) {
+        alert(err)
+    })
+
+    function DeleteBtn(id) {
+
+        var x = confirm('Are You Sure You Want To delete The Book ?')
+        if (x == true) {
+            axios.delete(`http://127.0.0.1:8000/book_api/action/${id}/`)
+                .then((resp) => {
+                    console.log(resp.data)
+                }).catch(function (err) {
+                    alert('error')
+                })
+        }
+        else{
+            window.location = '/dashboard/'
+        }
+
+    }
+
+
+
+</script>
+
+
+{% endblock body %}

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %}
+<title>addbook Page</title>
+
+<style>
+    #form-div{
+        width: 60%;
+        margin: 0px auto;
+    }
+</style>
+{% endblock title %}
+
+
+{% block body %}
+
+<div class="container my-5">
+
+    <div class="container bg-secondary text-light text-center p-2 rounded-3 shadow">
+        <h1 class="display-6">Add Book</h1>
+    </div>
+
+
+    <div class="container my-5 p-5 shadow rounded-3" id="form-div">
+
+
+        <div class="mb-3">
+            <input type="text" name="name" id="name" class="form-control" placeholder="Enter Book Name" required>
+        </div>
+
+        <div class="mb-3">
+            <input type="text" name="author" id="author" class="form-control" placeholder="Enter Book Author Name" required>
+        </div>
+
+        <div class="mb-3">
+            <input type="number" name="price" id="price" class="form-control" placeholder="Enter Book Price" required>
+        </div>
+
+        <div class="mb-3">
+            <textarea name="desc" id="desc" cols="30" rows="10" class="form-control" placeholder="Enter Book Description" required></textarea>
+        </div>
+
+        <div class="mb-3">
+            <input type="submit"  id="sumbit" value="Add Book" class="btn btn-success" onclick="AddBook()">
+        </div>
+    </div>
+</div>
+
+
+<script>
+    
+    function AddBook(){
+
+        var name = document.getElementById('name').value;
+        var desc = document.getElementById('desc').value;
+        var author = document.getElementById('author').value;
+        var price = document.getElementById('price').value;
+
+        let formData = new FormData();
+        formData.append('name' , name);
+        formData.append('desc' , desc);
+        formData.append('author' , author);
+        formData.append('price' , price);
+        formData.append('csrfmiddlewaretoken' ,'{{csrf_token}}' );
+
+        axios.post('http://127.0.0.1:8000/book_api/' , formData)
+        .then( (resp) => {
+            console.log(resp.data)
+
+            alert(resp.data.status)
+           
+            window.location = '/'
+        }).catch(function(err){
+            alert(err)
+        })
+    }
+
+</script>
+
+
+{% endblock body %}
